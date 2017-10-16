@@ -1,0 +1,9 @@
+---
+jwtauth:
+  master_secret: 4713a0c71df1mbv7498cjkdjghf84
+  leeway: 0
+
+database:
+  provider: sqlite
+  filename: ":memory:"
+  create_db: null

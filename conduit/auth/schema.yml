@@ -1,0 +1,30 @@
+---
+login:
+  user:
+    type: dict
+    schema:
+      email:
+        type: string
+        required: true
+      password:
+        type: string
+        required: true
+
+user:
+  user:
+    type: dict
+    schema:
+      username:
+        type: string
+        required: true
+      email:
+        type: string
+        validator: verify_email
+        required: true
+      password:
+        type: string
+        required: true
+      bio:
+        type: string
+      image:
+        type: string

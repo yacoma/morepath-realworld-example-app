@@ -1,0 +1,12 @@
+---
+jwtauth:
+  master_secret: 13ad14ebf16dks743793kdsjfi39fe0d47c37d2d
+
+database:
+  provider: postgres
+  user: conduit-morepath
+  password: conduit-morepath0
+  host: localhost
+  database: conduit-morepath
+  filename: null
+  create_db: null

@@ -1,0 +1,10 @@
+---
+jwtauth:
+  master_secret: b894da6ab8d041e9a9ec938757649840fdhj439c4413
+  leeway: 60
+  auth_header_prefix: Token
+
+database:
+  provider: sqlite
+  filename: conduit.db
+  create_db: true

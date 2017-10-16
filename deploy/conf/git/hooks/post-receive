@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+set -x
+prod_path="[PATH TO APP]"
+git_path="[PATH TO GIT].git"
+while read oldrev newrev ref
+do
+        branch=`echo $ref | cut -d/ -f3`
+        if [[ "master" == "$branch" ]]; then
+                git --work-tree=$prod_path checkout -f $branch
+                cd $prod_path
+                make deploylive
+                echo 'Changes pushed live.'
+        fi
+done
+cd $git_path
