@@ -1,6 +1,6 @@
 from datetime import datetime
 from argon2 import PasswordHasher
-from pony.orm import Required, Optional
+from pony.orm import Required, Optional, Set
 
 from conduit.database import db
 
@@ -19,6 +19,8 @@ class User(db.Entity):
     last_login = Optional(datetime, 0)
     bio = Optional(str, 300)
     image = Optional(str, 120)
+    followers = Set("User", reverse="is_following")
+    is_following = Set("User", reverse="followers")
 
     def update(self, payload={}):
         update_payload = {}
@@ -30,3 +32,8 @@ class User(db.Entity):
             else:
                 update_payload[attribute] = value
         self.set(**update_payload)
+
+
+class Profile(object):
+    def __init__(self, user):
+        self.profile = user

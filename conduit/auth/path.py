@@ -1,9 +1,9 @@
 from morepath import NO_IDENTITY
-from webob.exc import HTTPUnauthorized
+from webob.exc import HTTPUnauthorized, HTTPNotFound
 
 from .app import App
 from .collection import UserCollection
-from .model import Login, User
+from .model import Login, User, Profile
 
 
 @App.path(model=Login, path='users/login')
@@ -23,3 +23,12 @@ def get_current_user(request):
 @App.path(model=UserCollection, path='users')
 def get_user_collection():
     return UserCollection()
+
+
+@App.path(model=Profile, path='profiles/{username}')
+def get_profile(username):
+    user = User.get(username=username)
+    if not user:
+        raise HTTPNotFound
+
+    return Profile(user)

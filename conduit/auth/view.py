@@ -10,7 +10,7 @@ from more.cerberus import loader
 from conduit.permissions import ViewPermission, EditPermission
 from .app import App
 from .collection import UserCollection
-from .model import Login, User
+from .model import Login, User, Profile
 from .validator import EmailValidator
 
 
@@ -180,3 +180,63 @@ def user_update(self, request, json):
                 'image': self.image
             }
         }
+
+
+@App.json(model=Profile)
+def profile_get_default(self, request):
+    try:
+        current_user = User.get(email=request.identity.userid)
+        following = current_user in self.profile.followers
+    except ValueError:
+        following = False
+
+    return {
+        'profile': {
+            'username': self.profile.username,
+            'bio': self.profile.bio,
+            'image': self.profile.image,
+            'following': following,
+        }
+    }
+
+
+@App.json(
+    model=Profile,
+    name='follow',
+    request_method='POST',
+    permission=EditPermission
+)
+def profile_follow(self, request):
+    current_user = User.get(email=request.identity.userid)
+    if current_user not in self.profile.followers:
+        self.profile.followers.add(current_user)
+
+    return {
+        'profile': {
+            'username': self.profile.username,
+            'bio': self.profile.bio,
+            'image': self.profile.image,
+            'following': current_user in self.profile.followers,
+        }
+    }
+
+
+@App.json(
+    model=Profile,
+    name='follow',
+    request_method='DELETE',
+    permission=EditPermission
+)
+def profile_unfollow(self, request):
+    current_user = User.get(email=request.identity.userid)
+    if current_user in self.profile.followers:
+        self.profile.followers.remove(current_user)
+
+    return {
+        'profile': {
+            'username': self.profile.username,
+            'bio': self.profile.bio,
+            'image': self.profile.image,
+            'following': current_user in self.profile.followers,
+        }
+    }

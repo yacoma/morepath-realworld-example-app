@@ -8,5 +8,4 @@ class UserCollection(object):
         ph = PasswordHasher()
         password_hash = ph.hash(password)
         user = User(username=username, email=email, password=password_hash)
-        user.flush()
         return user
