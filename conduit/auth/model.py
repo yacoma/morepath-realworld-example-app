@@ -15,12 +15,15 @@ class User(db.Entity):
     username = Required(str, 80, unique=True)
     email = Required(str, 100, unique=True)
     password = Required(str, 255)
-    registered = Required(datetime, 0, default=datetime.now)
+    registered = Required(datetime, 0, default=datetime.utcnow)
     last_login = Optional(datetime, 0)
     bio = Optional(str, 300)
     image = Optional(str, 120)
-    followers = Set("User", reverse="is_following")
-    is_following = Set("User", reverse="followers")
+    followers = Set("User", reverse="follows")
+    follows = Set("User", reverse="followers")
+    articles = Set("Article", reverse="author")
+    favorites = Set("Article", reverse="favorited")
+    comments = Set("Comment")
 
     def update(self, payload={}):
         update_payload = {}

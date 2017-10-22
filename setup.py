@@ -28,6 +28,7 @@ setup(
         'argon2_cffi',
         'gunicorn',
         'pyyaml',
+        'awesome-slugify',
     ],
     extras_require=dict(
         test=[

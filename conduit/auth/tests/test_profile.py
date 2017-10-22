@@ -32,7 +32,7 @@ def setup_function(function):
 def test_profile():
     c = Client(App())
 
-    response = c.get('/profiles/NotExist', status=404)
+    c.get('/profiles/NotExist', status=404)
 
     response = c.get('/profiles/OtherUser')
 
@@ -92,20 +92,10 @@ def test_profile_follow():
     authtype, token = response.headers['Authorization'].split(' ', 1)
 
     response = c.post('/profiles/OtherUser/follow', headers=headers)
-    profile = {
-        "profile": {
-            "username": "OtherUser",
-            "bio": "",
-            "image": "",
-            "following": True
-        }
-    }
+    assert response.json['profile']['following'] is True
 
     response = c.post('/profiles/OtherUser/follow', headers=headers)
-    assert response.json == profile
-
-    response = c.post('/profiles/OtherUser/follow', headers=headers)
-    assert response.json == profile
+    assert response.json['profile']['following'] is True
 
 
 def test_profile_unfollow():
@@ -126,18 +116,11 @@ def test_profile_unfollow():
     headers = {'Authorization': response.headers['Authorization']}
     authtype, token = response.headers['Authorization'].split(' ', 1)
 
-    profile = {
-        "profile": {
-            "username": "OtherUser",
-            "bio": "",
-            "image": "",
-            "following": False
-        }
-    }
+    response = c.delete('/profiles/OtherUser/follow', headers=headers)
+    assert response.json['profile']['following'] is False
+
+    response = c.post('/profiles/OtherUser/follow', headers=headers)
+    assert response.json['profile']['following'] is True
 
     response = c.delete('/profiles/OtherUser/follow', headers=headers)
-    assert response.json == profile
-
-    c.post('/profiles/OtherUser/follow', headers=headers)
-    response = c.delete('/profiles/OtherUser/follow', headers=headers)
-    assert response.json == profile
+    assert response.json['profile']['following'] is False

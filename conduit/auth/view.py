@@ -39,15 +39,16 @@ def login(self, request, json):
             credentials_valid = True
 
         if credentials_valid:
-            user.last_login = datetime.now()
+            user.last_login = datetime.utcnow()
 
             @request.after
             def remember(response):
                 identity = morepath.Identity(email, username=user.username)
                 request.app.remember_identity(response, request, identity)
 
+                # creating response in @request.after to have access to token
                 atype, token = response.headers['Authorization'].split(' ', 1)
-                response_json = {
+                response.json = {
                     'user': {
                         'email': user.email,
                         'username': user.username,
@@ -56,7 +57,6 @@ def login(self, request, json):
                         'image': user.image
                     }
                 }
-                response.json = response_json
 
         else:
             @request.after
@@ -73,24 +73,10 @@ def login(self, request, json):
         return {'validationError': 'Invalid email or password'}
 
 
-@App.json(model=User, permission=ViewPermission)
-def user_get(self, request):
-    authtype, token = request.headers['Authorization'].split(' ', 1)
-    return {
-        'user': {
-            'email': self.email,
-            'username': self.username,
-            'token': token,
-            'bio': self.bio,
-            'image': self.image
-        }
-    }
-
-
 @App.json(
     model=UserCollection, request_method='POST', load=user_validator
 )
-def user_collection_add(self, request, json):
+def user_add(self, request, json):
     u = json['user']
     email = u['email']
     password = u['password']
@@ -118,7 +104,7 @@ def user_collection_add(self, request, json):
             email=email,
             password=password
         )
-        user.last_login = datetime.now()
+        user.last_login = datetime.utcnow()
 
         @request.after
         def remember(response):
@@ -127,8 +113,9 @@ def user_collection_add(self, request, json):
             identity = morepath.Identity(email, username=username)
             request.app.remember_identity(response, request, identity)
 
+            # creating response in @request.after to have access to token
             authtype, token = response.headers['Authorization'].split(' ', 1)
-            response_json = {
+            response.json = {
                 'user': {
                     'email': user.email,
                     'username': user.username,
@@ -137,7 +124,20 @@ def user_collection_add(self, request, json):
                     'image': user.image
                 }
             }
-            response.json = response_json
+
+
+@App.json(model=User, permission=ViewPermission)
+def user_default(self, request):
+    authtype, token = request.headers['Authorization'].split(' ', 1)
+    return {
+        'user': {
+            'email': self.email,
+            'username': self.username,
+            'token': token,
+            'bio': self.bio,
+            'image': self.image
+        }
+    }
 
 
 @App.json(
@@ -183,7 +183,7 @@ def user_update(self, request, json):
 
 
 @App.json(model=Profile)
-def profile_get_default(self, request):
+def profile_default(self, request):
     try:
         current_user = User.get(email=request.identity.userid)
         following = current_user in self.profile.followers

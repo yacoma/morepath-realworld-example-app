@@ -4,9 +4,10 @@ from more.jwtauth import JWTIdentityPolicy
 from more.pony import PonyApp
 
 from conduit.auth import AuthApp
+from conduit.blog import BlogApp
 
 
-class App(PonyApp, AuthApp):
+class App(PonyApp, AuthApp, BlogApp):
     pass
 
 

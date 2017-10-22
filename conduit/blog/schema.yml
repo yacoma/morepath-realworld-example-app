@@ -1,0 +1,26 @@
+---
+article:
+  article:
+    type: dict
+    schema:
+      title:
+        type: string
+        required: true
+      description:
+        type: string
+        required: true
+      body:
+        type: string
+        required: true
+      tagList:
+        type: list
+        schema:
+          type: string
+
+comment:
+  comment:
+    type: dict
+    schema:
+      body:
+        type: string
+        required: true
