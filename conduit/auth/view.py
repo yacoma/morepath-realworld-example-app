@@ -21,6 +21,18 @@ login_validator = loader(schema['login'])
 user_validator = loader(schema['user'], EmailValidator)
 
 
+def _dump_user_json(user, token):
+    return {
+        'user': {
+            'email': user.email,
+            'username': user.username,
+            'token': token,
+            'bio': user.bio,
+            'image': user.image
+        }
+    }
+
+
 @App.json(model=Login, request_method='POST', load=login_validator)
 def login(self, request, json):
     u = json['user']
@@ -46,17 +58,9 @@ def login(self, request, json):
                 identity = morepath.Identity(email, username=user.username)
                 request.app.remember_identity(response, request, identity)
 
-                # creating response in @request.after to have access to token
+                # creating JSON view in @request.after to have access to token
                 atype, token = response.headers['Authorization'].split(' ', 1)
-                response.json = {
-                    'user': {
-                        'email': user.email,
-                        'username': user.username,
-                        'token': token,
-                        'bio': user.bio,
-                        'image': user.image
-                    }
-                }
+                response.json = _dump_user_json(user, token)
 
         else:
             @request.after
@@ -113,31 +117,16 @@ def user_add(self, request, json):
             identity = morepath.Identity(email, username=username)
             request.app.remember_identity(response, request, identity)
 
-            # creating response in @request.after to have access to token
+            # creating JSON view in @request.after to have access to token
             authtype, token = response.headers['Authorization'].split(' ', 1)
-            response.json = {
-                'user': {
-                    'email': user.email,
-                    'username': user.username,
-                    'token': token,
-                    'bio': user.bio,
-                    'image': user.image
-                }
-            }
+            response.json = _dump_user_json(user, token)
 
 
 @App.json(model=User, permission=ViewPermission)
 def user_default(self, request):
     authtype, token = request.headers['Authorization'].split(' ', 1)
-    return {
-        'user': {
-            'email': self.email,
-            'username': self.username,
-            'token': token,
-            'bio': self.bio,
-            'image': self.image
-        }
-    }
+
+    return _dump_user_json(self, token)
 
 
 @App.json(
@@ -171,33 +160,29 @@ def user_update(self, request, json):
         self.update(u)
         authtype, token = request.headers['Authorization'].split(' ', 1)
 
-        return {
-            'user': {
-                'email': self.email,
-                'username': self.username,
-                'token': token,
-                'bio': self.bio,
-                'image': self.image
-            }
+        return _dump_user_json(self, token)
+
+
+def _dump_profile_json(profile, current_user):
+    return {
+        'profile': {
+            'username': profile.profile.username,
+            'bio': profile.profile.bio,
+            'image': profile.profile.image,
+            'following': current_user in profile.profile.followers
+            if current_user else False
         }
+    }
 
 
 @App.json(model=Profile)
 def profile_default(self, request):
     try:
         current_user = User.get(email=request.identity.userid)
-        following = current_user in self.profile.followers
     except ValueError:
-        following = False
+        current_user = None
 
-    return {
-        'profile': {
-            'username': self.profile.username,
-            'bio': self.profile.bio,
-            'image': self.profile.image,
-            'following': following,
-        }
-    }
+    return _dump_profile_json(self, current_user)
 
 
 @App.json(
@@ -211,14 +196,7 @@ def profile_follow(self, request):
     if current_user not in self.profile.followers:
         self.profile.followers.add(current_user)
 
-    return {
-        'profile': {
-            'username': self.profile.username,
-            'bio': self.profile.bio,
-            'image': self.profile.image,
-            'following': current_user in self.profile.followers,
-        }
-    }
+    return _dump_profile_json(self, current_user)
 
 
 @App.json(
@@ -232,11 +210,4 @@ def profile_unfollow(self, request):
     if current_user in self.profile.followers:
         self.profile.followers.remove(current_user)
 
-    return {
-        'profile': {
-            'username': self.profile.username,
-            'bio': self.profile.bio,
-            'image': self.profile.image,
-            'following': current_user in self.profile.followers,
-        }
-    }
+    return _dump_profile_json(self, current_user)

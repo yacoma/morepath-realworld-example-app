@@ -1,5 +1,5 @@
 from morepath import NO_IDENTITY
-from webob.exc import HTTPUnauthorized, HTTPNotFound
+from webob.exc import HTTPUnauthorized
 
 from .app import App
 from .collection import UserCollection
@@ -29,6 +29,6 @@ def get_user_collection():
 def get_profile(username):
     user = User.get(username=username)
     if not user:
-        raise HTTPNotFound
+        return None
 
     return Profile(user)

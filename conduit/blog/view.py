@@ -19,6 +19,30 @@ article_validator = loader(schema['article'])
 comment_validator = loader(schema['comment'])
 
 
+def _dump_article_json(article, current_user=None):
+    return {
+        'article': {
+            'slug': article.slug,
+            'title': article.title,
+            'description': article.description,
+            'body': article.body,
+            'tagList': [tag.tagname for tag in article.tag_list],
+            'createdAt': datetime_to_isoformat(article.created_at),
+            'updatedAt': datetime_to_isoformat(article.updated_at),
+            'favorited': current_user in article.favorited
+            if current_user else False,
+            'favoritesCount': len(article.favorited),
+            'author': {
+                'username': article.author.username,
+                'bio': article.author.bio,
+                'image': article.author.image,
+                'following': current_user in article.author.followers
+                if current_user else False
+            }
+        }
+    }
+
+
 @App.json(model=ArticleCollection)
 def article_collection_default(self, request):
     articles = [
@@ -69,57 +93,17 @@ def article_add(self, request, json):
     def remember(response):
         response.status = 201
 
-    return {
-        'article': {
-            'slug': article.slug,
-            'title': article.title,
-            'description': article.description,
-            'body': article.body,
-            'tagList': [tag.tagname for tag in article.tag_list],
-            'createdAt': datetime_to_isoformat(article.created_at),
-            'updatedAt': datetime_to_isoformat(article.updated_at),
-            'favorited': current_user in article.favorited,
-            'favoritesCount': len(article.favorited),
-            'author': {
-                'username': article.author.username,
-                'bio': article.author.bio,
-                'image': article.author.image,
-                'following': current_user in article.author.followers
-            }
-        }
-    }
+    return _dump_article_json(article, current_user)
 
 
 @App.json(model=Article)
 def article_default(self, request):
-    author = self.author
     try:
         current_user = User.get(email=request.identity.userid)
-        favorited = current_user in self.favorited
-        author_following = current_user in author.followers
     except ValueError:
-        favorited = False
-        author_following = False
+        current_user = None
 
-    return {
-        'article': {
-            'slug': self.slug,
-            'title': self.title,
-            'description': self.description,
-            'body': self.body,
-            'tagList': [tag.tagname for tag in self.tag_list],
-            'createdAt': datetime_to_isoformat(self.created_at),
-            'updatedAt': datetime_to_isoformat(self.updated_at),
-            'favorited': favorited,
-            'favoritesCount': len(self.favorited),
-            'author': {
-                'username': author.username,
-                'bio': author.bio,
-                'image': author.image,
-                'following': author_following
-            }
-        }
-    }
+    return _dump_article_json(self, current_user)
 
 
 @App.json(
@@ -132,25 +116,7 @@ def article_update(self, request, json):
     self.update(json['article'])
     current_user = User.get(email=request.identity.userid)
 
-    return {
-        'article': {
-            'slug': self.slug,
-            'title': self.title,
-            'description': self.description,
-            'body': self.body,
-            'tagList': [tag.tagname for tag in self.tag_list],
-            'createdAt': datetime_to_isoformat(self.created_at),
-            'updatedAt': datetime_to_isoformat(self.updated_at),
-            'favorited': current_user in self.favorited,
-            'favoritesCount': len(self.favorited),
-            'author': {
-                'username': self.author.username,
-                'bio': self.author.bio,
-                'image': self.author.image,
-                'following': current_user in self.author.followers
-            }
-        }
-    }
+    return _dump_article_json(self, current_user)
 
 
 @App.json(model=Article, request_method='DELETE', permission=EditPermission)
@@ -169,25 +135,7 @@ def article_favorite(self, request):
     if current_user not in self.favorited:
         self.favorited.add(current_user)
 
-    return {
-        'article': {
-            'slug': self.slug,
-            'title': self.title,
-            'description': self.description,
-            'body': self.body,
-            'tagList': [tag.tagname for tag in self.tag_list],
-            'createdAt': datetime_to_isoformat(self.created_at),
-            'updatedAt': datetime_to_isoformat(self.updated_at),
-            'favorited': current_user in self.favorited,
-            'favoritesCount': len(self.favorited),
-            'author': {
-                'username': self.author.username,
-                'bio': self.author.bio,
-                'image': self.author.image,
-                'following': current_user in self.author.followers
-            }
-        }
-    }
+    return _dump_article_json(self, current_user)
 
 
 @App.json(
@@ -201,22 +149,22 @@ def article_unfavorite(self, request):
     if current_user in self.favorited:
         self.favorited.remove(current_user)
 
+    return _dump_article_json(self, current_user)
+
+
+def _dump_comment_json(comment, current_user=None):
     return {
-        'article': {
-            'slug': self.slug,
-            'title': self.title,
-            'description': self.description,
-            'body': self.body,
-            'tagList': [tag.tagname for tag in self.tag_list],
-            'createdAt': datetime_to_isoformat(self.created_at),
-            'updatedAt': datetime_to_isoformat(self.updated_at),
-            'favorited': current_user in self.favorited,
-            'favoritesCount': len(self.favorited),
+        'comment': {
+            'id': comment.id,
+            'body': comment.body,
+            'createdAt': datetime_to_isoformat(comment.created_at),
+            'updatedAt': datetime_to_isoformat(comment.updated_at),
             'author': {
-                'username': self.author.username,
-                'bio': self.author.bio,
-                'image': self.author.image,
-                'following': current_user in self.author.followers
+                'username': comment.author.username,
+                'bio': comment.author.bio,
+                'image': comment.author.image,
+                'following': current_user in comment.author.followers
+                if current_user else False
             }
         }
     }
@@ -248,45 +196,17 @@ def comment_add(self, request, json):
     def remember(response):
         response.status = 201
 
-    return {
-        'comment': {
-            'id': comment.id,
-            'body': comment.body,
-            'createdAt': datetime_to_isoformat(comment.created_at),
-            'updatedAt': datetime_to_isoformat(comment.updated_at),
-            'author': {
-                'username': comment.author.username,
-                'bio': comment.author.bio,
-                'image': comment.author.image,
-                'following': current_user in comment.author.followers
-            }
-        }
-    }
+    return _dump_comment_json(comment)
 
 
 @App.json(model=Comment)
 def comment_default(self, request):
-    author = self.author
     try:
         current_user = User.get(email=request.identity.userid)
-        author_following = current_user in author.followers
     except ValueError:
-        author_following = False
+        current_user = None
 
-    return {
-        'comment': {
-            'id': self.id,
-            'body': self.body,
-            'createdAt': datetime_to_isoformat(self.created_at),
-            'updatedAt': datetime_to_isoformat(self.updated_at),
-            'author': {
-                'username': author.username,
-                'bio': author.bio,
-                'image': author.image,
-                'following': author_following
-            }
-        }
-    }
+    return _dump_comment_json(self, current_user)
 
 
 @App.json(model=Comment, request_method='DELETE', permission=EditPermission)

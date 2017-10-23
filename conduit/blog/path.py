@@ -1,5 +1,5 @@
 from morepath import NO_IDENTITY
-from webob.exc import HTTPUnauthorized, HTTPNotFound
+from webob.exc import HTTPUnauthorized
 
 from conduit.auth import User
 from .app import App
@@ -39,7 +39,7 @@ def get_article(slug=''):
 def get_comment_collection(slug=''):
     article = Article.get(slug=slug)
     if not article:
-        raise HTTPNotFound
+        return None
     return CommentCollection(article)
 
 
@@ -47,7 +47,7 @@ def get_comment_collection(slug=''):
 def get_comment(slug='', id=0):
     article = Article.get(slug=slug)
     if not article or not Comment.exists(id=id):
-        raise HTTPNotFound
+        return None
     return Comment[id]
 
 
