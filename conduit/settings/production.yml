@@ -4,9 +4,9 @@ jwtauth:
 
 database:
   provider: postgres
-  user: conduit-morepath
-  password: conduit-morepath0
+  user: yacoma_conduit
+  password: '!tiudnoc0!'
   host: localhost
-  database: conduit-morepath
+  database: yacoma_conduit
   filename: null
   create_db: null

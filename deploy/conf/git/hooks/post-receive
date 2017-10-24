@@ -13,4 +13,4 @@ do
                 echo 'Changes pushed live.'
         fi
 done
-cd $git_path
+  cd $git_path
