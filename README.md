@@ -99,6 +99,7 @@ The core application under the `conduit` folder contains:
 - `blog/` - Folder contains the BlogApp.
 - `settings/`- Folder contains the default settings and the settings
   for production and testing in YAML format.
+- `test/` - Folder contains the unit tests.
 
 The subapplication folders `auth/` and `blog/` contain:
 
@@ -109,7 +110,6 @@ The subapplication folders `auth/` and `blog/` contain:
 - `view.py` - Creates the views depending on the model.
 - `schema.yml` - Contains the schemas used by Cerberus in YAML format.
 - `validator.py` - Contains custom validators used by Cerberus (only in `auth`).
-- `test/` - Folder contains the unit tests.
 
 ## Error Handling
 
