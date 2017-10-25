@@ -5,7 +5,7 @@ jwtauth:
 database:
   provider: postgres
   user: yacoma_conduit
-  password: '!tiudnoc0!'
+  password: daUkaWZihE
   host: localhost
   database: yacoma_conduit
   filename: null
