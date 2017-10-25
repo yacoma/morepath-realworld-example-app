@@ -18,10 +18,7 @@ We've gone to great lengths to adhere to the **Morepath** community
 For more information on how to this works with other frontends/backends, head over to the
 [RealWorld](https://github.com/gothinkster/realworld) repo.
 
-A demo api server is running at http://conduit.yacoma.it/api/.
-
-
-This repo is functionality complete — PRs and issues welcome!
+A demo conduit-morepath backend server is running at http://conduit.yacoma.it/api.
 
 <!-- TOC depthFrom:1 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
 
@@ -32,6 +29,11 @@ This repo is functionality complete — PRs and issues welcome!
 	- [Error Handling](#error-handling)
 	- [Authentication](#authentication)
 - [Testing](#testing)
+- [Deployment](#deployment)
+	- [Requirements for the server](#requirements-for-the-server)
+	- [Overview](#overview)
+	- [Configuration](#configuration)
+	- [Database](#database)
 
 <!-- /TOC -->
 
@@ -95,8 +97,10 @@ The core application under the `conduit` folder contains:
 - `permissions.py` - Sets up the permissions and permission rules used to
   protect the views.
 - `database.py` - Just creates an instance of the PonyORM `Database`.
-- `error_view` - Defines the handling of the Cerberus `ValidationError`.
+- `error_view.py` - Defines the handling of the Cerberus `ValidationError`.
   For details see below.
+- `utils.py` - Some utility scripts. Here for transforming from datetime to
+	ISO format and back.
 - `auth/` - Folder contains the AuthApp.
 - `blog/` - Folder contains the BlogApp.
 - `settings/`- Folder contains the default settings and the settings
@@ -145,7 +149,7 @@ To check for test coverage:
 ```sh
 (env) $ py.test --cov
 ```
-The example App has 100% test coverage.
+The example App ships with 100% test coverage.
 
 To check if your code is conform with PEP8:
 
@@ -159,3 +163,69 @@ installed Python 3.5 or/and Python 3.6:
 ```sh
 (env) $ tox
 ```
+
+# Deployment
+
+## Requirements for the server
+
+- [nginx](https://nginx.org/en/)
+- [supervisor](http://supervisord.org/)
+- [make](https://www.gnu.org/software/make/)
+
+On Debian/Ubuntu you can install them as superuser with:
+
+```sh
+$ apt-get install nginx supervisor make
+```
+
+## Overview
+
+We use a `post-receive` git hook to puplish the repository on the production
+server. He triggers on every push to the git repo on the server.
+
+The `post-receive` hook uses the path defined in the `prod_path`
+variable. Make sure that this path exists on the server before pushing
+the first time.
+
+The hook triggers `make deploylive` which is defined in `Makefile`. This
+install the dependencies and build the App.
+
+## Configuration
+
+The `deploy/conf` directory contains samples for git hook and server
+configuration with gunicord behind a nginx reverse proxy. For monitoring
+and controlling gunicord we use supervisor.
+
+- **git/hooks/post-receive** - put this in the `hooks` directory of
+  your bare git repository on the server.
+- **web/nginx.conf** - the nginx configuration.
+- **web/supervisord.conf** - the supervisor configuration for
+  gunicorn.
+- **web/gunicorn.sample.conf.py** - Gunicorn configuration, should be moved
+	to `web/gunicorn.sample.py` after configuring.
+
+The samples have to be configured by replacing the placeholders
+indicated by [*PLACEHOLDER*].
+
+The following placeholders are used:
+
+- **[PATH TO APP]** - absolute path to the app folder on the server
+- **[PATH TO GIT]** - absolute path to the git repository on the server
+- **[IP]** - IP address of the server
+- **[PORT]** - port on which the Gunicorn WSGI server should run
+	(remember to open this TCP port in your firewall)
+- **[SERVERNAME]** - servername which is normally the base URL of the server
+- **[PATH TO LOG]** - absolute path to HTTP log without file extension
+- **[PATH TO GUNICORN LOG]** - absolute path to Gunicorn log without file extension
+
+## Database
+
+PonyORM supports SQLite, PostgreSQL, MySQL/MariaDB and Oracle.
+In the example App we use Postgres in production and SQLite
+for development and testing.
+
+When you want to use another database then SQLite you have to
+first create a database for conduit-morepath on the server.
+
+Then configure `conduit/settings/production.yml` according
+to the database setup.
