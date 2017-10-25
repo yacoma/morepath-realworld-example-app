@@ -10,9 +10,6 @@ env/bin/python:
 
 deploylive: env/bin/python
 	env/bin/pip install -Ue '.[production]'
-	rm -rf node_modules
-	npm install
-	npm run build:production
 
 	# check gunicorn config and create database if not present
 	export RUN_ENV=production; env/bin/gunicorn --check-config conduit.run
@@ -21,8 +18,6 @@ deploylive: env/bin/python
 
 setuplocal: env/bin/python
 	env/bin/pip install -Ue .
-	npm install
-	npm run build
 
 	# check gunicorn config and create database if not present
 	env/bin/gunicorn --check-config conduit.run
