@@ -54,6 +54,7 @@ setup(
         ],
     ),
     classifiers=[
+        'License :: OSI Approved :: MIT License'
         'Intended Audience :: Developers',
         'Environment :: Web Environment',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
