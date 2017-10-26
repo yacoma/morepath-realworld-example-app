@@ -15,12 +15,12 @@ class ArticleCollection(object):
     def query(self):
         result = Article.select()
         if self.tag:
-            result = result.filter(lambda a: self.tag in a.tag_list)
+            result = result.where(lambda a: self.tag in a.tag_list)
         if self.author:
-            result = result.filter(author=self.author)
+            result = result.where(lambda a: a.author == self.author)
         if self.favorited:
-            result = result.filter(lambda a: self.favorited in a.favorited)
-        result = result.order_by(desc(Article.created_at))
+            result = result.where(lambda a: self.favorited in a.favorited)
+        result = result.sort_by(desc(Article.created_at))
         if self.limit:
             result = result.limit(self.limit, offset=self.offset)
 
@@ -57,7 +57,7 @@ class ArticleFeed(object):
         result = select(article for article in Article
                         for author in article.author
                         if self.user in author.follows)
-        result = result.order_by(desc(Article.created_at))
+        result = result.sort_by(desc(Article.created_at))
         if self.limit:
             result = result.limit(self.limit, offset=self.offset)
 
@@ -71,7 +71,7 @@ class CommentCollection(object):
     def query(self):
         return Comment.select(
             lambda c: c.article == self.article
-        ).order_by(desc(Comment.created_at))[:]
+        ).sort_by(desc(Comment.created_at))[:]
 
     def add(self, body, author):
         comment = Comment(
@@ -86,4 +86,4 @@ class CommentCollection(object):
 
 class TagCollection(object):
     def query(self):
-        return Tag.select().order_by(Tag.tagname)[:]
+        return Tag.select().sort_by(Tag.tagname)[:]
