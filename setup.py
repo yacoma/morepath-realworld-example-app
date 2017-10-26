@@ -16,7 +16,7 @@ setup(
     author='Henri Hulski',
     author_email='henri.hulski@gazeta.pl',
     license='MIT',
-    url="https://github.com/henri-hulski/realworld-starter-kit",
+    url="https://github.com/yacoma/morepath-realworld-example-app",
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
