@@ -50,24 +50,17 @@ def login(self, request, json):
         else:
             credentials_valid = True
 
-        if credentials_valid:
-            user.last_login = datetime.utcnow()
+    if credentials_valid:
+        user.last_login = datetime.utcnow()
 
-            @request.after
-            def remember(response):
-                identity = morepath.Identity(email, username=user.username)
-                request.app.remember_identity(response, request, identity)
+        @request.after
+        def remember(response):
+            identity = morepath.Identity(email, username=user.username)
+            request.app.remember_identity(response, request, identity)
 
-                # creating JSON view in @request.after to have access to token
-                atype, token = response.headers['Authorization'].split(' ', 1)
-                response.json = _dump_user_json(user, token)
-
-        else:
-            @request.after
-            def credentials_not_valid(response):
-                response.status_code = 403
-
-            return {'validationError': 'Invalid email or password'}
+            # creating JSON view in @request.after to have access to token
+            atype, token = response.headers['Authorization'].split(' ', 1)
+            response.json = _dump_user_json(user, token)
 
     else:
         @request.after
