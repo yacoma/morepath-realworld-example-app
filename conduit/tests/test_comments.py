@@ -27,11 +27,11 @@ def setup_function(function):
     with db_session:
         User(
             id=1, username='Tester', email='tester@example.com',
-            password=ph.hash('test1'), bio='My life', image='me.png'
+            password=ph.hash('top_secret_1'), bio='My life', image='me.png'
         )
         User(
             id=2, username='SomeUser', email='some_user@example.com',
-            password=ph.hash('test2'), follows=[User[1]]
+            password=ph.hash('top_secret_2'), follows=[User[1]]
         )
         Article(
             id=1,
@@ -109,7 +109,7 @@ def test_add_article_comment():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -195,7 +195,7 @@ def test_article_comment():
         json.dumps({
             "user": {
                 "email": "some_user@example.com",
-                "password": "test2"
+                "password": "top_secret_2"
             }
         }),
     )
@@ -216,7 +216,7 @@ def test_delete_article_comment():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )

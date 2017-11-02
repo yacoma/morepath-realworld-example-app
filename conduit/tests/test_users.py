@@ -24,9 +24,9 @@ def setup_function(function):
 
     with db_session:
         User(id=1, username='Tester', email='tester@example.com',
-             password=ph.hash('test1'))
+             password=ph.hash('top_secret_1'))
         User(id=2, username='OtherUser', email='other_user@example.com',
-             password=ph.hash('test2'))
+             password=ph.hash('top_secret_2'))
 
 
 def test_login():
@@ -38,7 +38,7 @@ def test_login():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "false"
+                "password": "false_password"
             }
         }),
         status=403
@@ -52,21 +52,7 @@ def test_login():
         json.dumps({
             "user": {
                 "email": "not_exists@example.com",
-                "password": "test1"
-            }
-        }),
-        status=403
-    )
-    assert response.json == {
-        "validationError": "Invalid email or password"
-    }
-
-    response = c.post(
-        '/users/login',
-        json.dumps({
-            "user": {
-                "email": "test@example",
-                "password": "secret"
+                "password": "top_secret_1"
             }
         }),
         status=403
@@ -80,7 +66,7 @@ def test_login():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -109,7 +95,7 @@ def test_user():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -138,7 +124,7 @@ def test_add_user():
         "user": {
             "username": "NewUser",
             "email": "newuser@example.com",
-            "password": "test7",
+            "password": "top_secret_3",
         }
     })
 
@@ -162,16 +148,14 @@ def test_add_user():
         "user": {
             "username": "NextUser",
             "email": "newuser@example.com",
-            "password": "test7",
+            "password": "top_secret_3",
         }
     })
 
     response = c.post('/users', new_user_json, status=422)
     assert response.json == {
         "errors": {
-            "email": [
-                "has already been taken"
-            ]
+            "email": ["has already been taken"]
         }
     }
 
@@ -179,16 +163,14 @@ def test_add_user():
         "user": {
             "username": "NewUser",
             "email": "nextuser@example.com",
-            "password": "test7",
+            "password": "top_secret_3",
         }
     })
 
     response = c.post('/users', new_user_json, status=422)
     assert response.json == {
         "errors": {
-            "username": [
-                "has already been taken"
-            ]
+            "username": ["has already been taken"]
         }
     }
 
@@ -196,16 +178,14 @@ def test_add_user():
         "user": {
             "username": "NewUser",
             "email": "newuser@example",
-            "password": "test8",
+            "password": "top_secret_4",
         }
     })
 
     response = c.post('/users', new_user_json, status=422)
     assert response.json == {
         "errors": {
-            "email": [
-                "Not valid email"
-            ]
+            "email": ["Not valid email"]
         }
     }
 
@@ -213,16 +193,29 @@ def test_add_user():
         "user": {
             "username": 123,
             "email": "username_not_string@example.com",
-            "password": "test9",
+            "password": "top_secret_5",
         }
     })
 
     response = c.post('/users', new_user_json, status=422)
     assert response.json == {
         "errors": {
-            "username": [
-                "must be of string type"
-            ]
+            "username": ["must be of string type"]
+        }
+    }
+
+    new_user_json = json.dumps({
+        "user": {
+            "username": "next_user",
+            "email": "username_not_string@example.com",
+            "password": "short",
+        }
+    })
+
+    response = c.post('/users', new_user_json, status=422)
+    assert response.json == {
+        "errors": {
+            "password": ["min length is 8"]
         }
     }
 
@@ -235,7 +228,7 @@ def test_update_user():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -309,14 +302,14 @@ def test_update_user():
 
     update_user_json = json.dumps({
         "user": {
-            "password": "secret0",
+            "password": "top_secret_0",
         }
     })
     c.put('/user', update_user_json, headers=headers)
 
     ph = PasswordHasher()
     with db_session:
-        assert ph.verify(User[1].password, 'secret0')
+        assert ph.verify(User[1].password, 'top_secret_0')
 
     update_user_json = json.dumps({
         "user": {

@@ -24,9 +24,9 @@ def setup_function(function):
 
     with db_session:
         User(id=1, username='Tester', email='tester@example.com',
-             password=ph.hash('test1'))
+             password=ph.hash('top_secret_1'))
         User(id=2, username='OtherUser', email='other_user@example.com',
-             password=ph.hash('test2'))
+             password=ph.hash('top_secret_2'))
 
 
 def test_profile():
@@ -52,7 +52,7 @@ def test_profile():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -83,7 +83,7 @@ def test_profile_follow():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -108,7 +108,7 @@ def test_profile_unfollow():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )

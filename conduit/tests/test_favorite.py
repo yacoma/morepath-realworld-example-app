@@ -27,10 +27,10 @@ def setup_function(function):
     with db_session:
         User(
             id=1, username='Tester', email='tester@example.com',
-            password=ph.hash('test1'), bio='My life', image='me.png'
+            password=ph.hash('top_secret_1'), bio='My life', image='me.png'
         )
         User(id=2, username='SomeUser', email='some_user@example.com',
-             password=ph.hash('test2'), follows=[User[1]])
+             password=ph.hash('top_secret_2'), follows=[User[1]])
         Tag(id=1, tagname='test')
         Article(
             id=1,
@@ -54,7 +54,7 @@ def test_article_favorite():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -78,7 +78,7 @@ def test_article_unfavorite():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )

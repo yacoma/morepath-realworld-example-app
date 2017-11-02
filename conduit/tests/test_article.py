@@ -27,7 +27,7 @@ def setup_function(function):
     with db_session:
         User(
             id=1, username='Tester', email='tester@example.com',
-            password=ph.hash('test1'), bio='My life', image='me.png'
+            password=ph.hash('top_secret_1'), bio='My life', image='me.png'
         )
         Tag(id=1, tagname='test')
         Tag(id=2, tagname='text')
@@ -75,7 +75,7 @@ def test_article():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -105,7 +105,7 @@ def test_update_article():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
@@ -163,7 +163,7 @@ def test_delete_article():
         json.dumps({
             "user": {
                 "email": "tester@example.com",
-                "password": "test1"
+                "password": "top_secret_1"
             }
         }),
     )
