@@ -196,7 +196,7 @@ def comment_add(self, request, json):
     def remember(response):
         response.status = 201
 
-    return _dump_comment_json(comment)
+    return _dump_comment_json(comment, current_user)
 
 
 @App.json(model=Comment)
