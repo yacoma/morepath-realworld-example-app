@@ -150,45 +150,14 @@ def test_add_article_comment():
     }
 
 
-def test_article_comment():
+def test_article_comment_is_internal():
     c = Client(App())
-
-    comment_1 = {
-        'comment': {
-            'id': 1,
-            'body': 'Cool text.',
-            'createdAt': '2017-10-21T13:17:45.000Z',
-            'updatedAt': '2017-10-21T13:17:45.000Z',
-            'author': {
-                'username': 'Tester',
-                'bio': 'My life',
-                'image': 'me.png',
-                'following': True
-            }
-        }
-    }
-
-    comment_2 = {
-        'comment': {
-            'id': 2,
-            'body': 'Another comment.',
-            'createdAt': '2017-10-21T17:54:45.000Z',
-            'updatedAt': '2017-10-21T17:54:45.000Z',
-            'author': {
-                'username': 'SomeUser',
-                'bio': '',
-                'image': '',
-                'following': False
-            }
-        }
-    }
 
     c.get('/articles/NotExist/comments/1', status=404)
 
     c.get('/articles/test-text/comments/7', status=404)
 
-    response = c.get('/articles/test-text/comments/2')
-    assert response.json == comment_2
+    c.get('/articles/test-text/comments/2', status=404)
 
     response = c.post(
         '/users/login',
@@ -202,8 +171,7 @@ def test_article_comment():
 
     headers = {'Authorization': response.headers['Authorization']}
 
-    response = c.get('/articles/test-text/comments/1', headers=headers)
-    assert response.json == comment_1
+    c.get('/articles/test-text/comments/1', headers=headers, status=404)
 
 
 def test_delete_article_comment():

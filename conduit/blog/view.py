@@ -199,7 +199,7 @@ def comment_add(self, request, json):
     return _dump_comment_json(comment, current_user)
 
 
-@App.json(model=Comment)
+@App.json(model=Comment, internal=True)
 def comment_default(self, request):
     try:
         current_user = User.get(email=request.identity.userid)
