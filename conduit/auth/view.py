@@ -65,9 +65,13 @@ def login(self, request, json):
     else:
         @request.after
         def credentials_not_valid(response):
-            response.status_code = 403
+            response.status_code = 422
 
-        return {'validationError': 'Invalid email or password'}
+        return {
+            'errors': {
+              'email or password': ['is invalid'],
+            }
+        }
 
 
 @App.json(

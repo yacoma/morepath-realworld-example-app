@@ -41,10 +41,12 @@ def test_login():
                 "password": "false_password"
             }
         }),
-        status=403
+        status=422
     )
     assert response.json == {
-        "validationError": "Invalid email or password"
+        "errors": {
+            "email or password": ["is invalid"]
+        }
     }
 
     response = c.post(
@@ -55,10 +57,12 @@ def test_login():
                 "password": "top_secret_1"
             }
         }),
-        status=403
+        status=422
     )
     assert response.json == {
-        "validationError": "Invalid email or password"
+        "errors": {
+            "email or password": ["is invalid"]
+        }
     }
 
     response = c.post(
