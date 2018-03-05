@@ -14,14 +14,14 @@ def get_article_collection(
     tag='',
     author='',
     favorited='',
-    limit=20,
+    limit=10,
     offset=0
 ):
     return ArticleCollection(tag, author, favorited, limit, offset)
 
 
 @App.path(model=ArticleFeed, path='articles/feed')
-def get_article_feed(request, limit=20, offset=0):
+def get_article_feed(request, limit=10, offset=0):
     current_user = request.identity
     if current_user == NO_IDENTITY:
         raise HTTPUnauthorized
