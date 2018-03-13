@@ -7,7 +7,6 @@ env/bin/python:
 	env/bin/pip install --upgrade pip setuptools
 
 .PHONY:	deploylive
-
 deploylive: env/bin/python
 	env/bin/pip install -Ue '.[production]'
 
@@ -15,7 +14,6 @@ deploylive: env/bin/python
 	export RUN_ENV=production; env/bin/gunicorn --check-config conduit.run
 
 .PHONY:	setuplocal
-
 setuplocal: env/bin/python
 	env/bin/pip install -Ue .
 

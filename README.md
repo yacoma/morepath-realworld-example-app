@@ -3,7 +3,7 @@
 > ### Morepath codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
 
 
-### [Demo](http://conduit.yacoma.it/api/)
+### [Demo](https://conduit.yacoma.it/api/)
 
 
 This codebase was created to demonstrate a fully fledged fullstack application built with
@@ -18,7 +18,7 @@ We've gone to great lengths to adhere to the **Morepath** community
 For more information on how to this works with other frontends/backends, head over to the
 [RealWorld](https://github.com/gothinkster/realworld) repo.
 
-A demo conduit-morepath backend server is running at http://conduit.yacoma.it/api.
+A demo conduit-morepath backend server is running at https://conduit.yacoma.it/api.
 
 <!-- TOC depthFrom:1 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
 
@@ -62,7 +62,7 @@ Once that is done you can start the server:
 (env) $ gunicorn conduit.run
 ```
 
-You can go to <http://localhost:8000> to see the UI.
+You can access the conduit server at <http://localhost:8000/api>.
 
 You can also start the server on another host/port:
 
@@ -210,13 +210,52 @@ indicated by [*PLACEHOLDER*].
 The following placeholders are used:
 
 - **[PATH TO APP]** - absolute path to the app folder on the server
-- **[PATH TO GIT]** - absolute path to the git repository on the server
 - **[IP]** - IP address of the server
 - **[PORT]** - port on which the Gunicorn WSGI server should run
 	(remember to open this TCP port in your firewall)
 - **[SERVERNAME]** - servername which is normally the base URL of the server
 - **[PATH TO LOG]** - absolute path to HTTP log without file extension
 - **[PATH TO GUNICORN LOG]** - absolute path to Gunicorn log without file extension
+- **[PATH TO CERTIFICATE]** - absolute path to SSL certificate file
+- **[PATH TO CERTIFICATE KEY]** - absolute path to SSL certificate key file
+- **[PATH TO CLIENT BUILD]** - absolute path client build you want to serve
+
+## Serve a conduit client together with the backend
+
+Optionally you can also serve a conduit client like the
+[Cerebral Example App](https://github.com/yacoma/cerebral-realworld-example-app)
+together with the Morepath backend.
+
+- In **nginx.conf** add a root location with the path to your client build.
+  It can be in a different directory then the Morepath backend.
+- Add a `post-receive` git hook to your client repo similar to the one we use for
+  the backend.
+  ```sh
+	#!/bin/bash
+	#
+	set -x
+	app_path="[PATH TO CLIENT APP]"
+
+	while read oldrev newrev ref
+	do
+	        branch=`echo $ref | cut -d/ -f3`
+	        if [[ "master" == "$branch" ]]; then
+	                git --work-tree=$app_path checkout -f $branch
+	                cd $app_path
+	                make deploylive
+	                echo 'Changes pushed live.'
+	        fi
+	done
+  ```
+- Create a simple Makefile to build the client. Remember to put a tab character
+  at the beginning of every recipe line!
+  ```make
+	.PHONY:	deploylive
+	deploylive:
+		rm -rf node_modules
+		npm install
+		npm run build
+  ```
 
 ## Database
 
