@@ -79,6 +79,7 @@ You can also start the server on another host/port:
 - Object-Relational Mapper: [PonyORM](https://github.com/morepath/more.pony)
 - Authentication: [JSON Web Token (JWT)](https://github.com/morepath/more.jwtauth)
 - Validation: [Cerberus](https://github.com/morepath/more.cerberus)
+- CORS support: [more.cors](https://github.com/morepath/more.cors)
 - Creating slugs from article titles: [awesome-slugify](https://github.com/dimka665/awesome-slugify)
 - Password hashing: [Argon2](https://argon2-cffi.readthedocs.io)
 - WSGI HTTP Server: [gunicorn](http://gunicorn.org)

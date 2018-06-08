@@ -25,6 +25,7 @@ setup(
         'more.cerberus',
         'more.jwtauth',
         'more.pony',
+        'more.cors',
         'argon2_cffi',
         'gunicorn',
         'pyyaml',
@@ -45,7 +46,7 @@ setup(
             'pytest-cov',
         ],
         production=[
-            'psycopg2',
+            'psycopg2-binary',
         ]
     ),
     entry_points=dict(
