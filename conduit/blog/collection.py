@@ -55,8 +55,7 @@ class ArticleFeed(object):
 
     def query(self):
         result = select(article for article in Article
-                        for author in article.author
-                        if self.user in author.follows)
+                        if self.user in article.author.followers)
         result = result.sort_by(desc(Article.created_at))
         if self.limit:
             result = result.limit(self.limit, offset=self.offset)

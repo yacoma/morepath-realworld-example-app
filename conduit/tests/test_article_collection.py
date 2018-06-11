@@ -26,12 +26,13 @@ def setup_function(function):
 
     with db_session:
         User(
-            id=1, username='Tester', email='tester@example.com',
-            password=ph.hash('top_secret_1'), bio='My life', image='me.png'
+            id=2, username='OtherUser', email='other_user@example.com',
+            password=ph.hash('top_secret_2')
         )
         User(
-            id=2, username='OtherUser', email='other_user@example.com',
-            password=ph.hash('top_secret_2'), follows=[User[1]]
+            id=1, username='Tester', email='tester@example.com',
+            password=ph.hash('top_secret_1'), bio='My life',
+            image='me.png', follows=[User[2]]
         )
         Tag(id=1, tagname='test')
         Tag(id=2, tagname='text')
@@ -311,7 +312,7 @@ def test_feed_articles():
             'username': 'OtherUser',
             'bio': '',
             'image': '',
-            'following': False
+            'following': True
         },
         'tagList': ['text']
     }
@@ -351,7 +352,7 @@ def test_paginate_feed_articles():
             'username': 'OtherUser',
             'bio': '',
             'image': '',
-            'following': False
+            'following': True
         },
         'tagList': ['text']
     }
