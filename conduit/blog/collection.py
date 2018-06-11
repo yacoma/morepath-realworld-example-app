@@ -1,4 +1,4 @@
-from pony.orm import select, desc
+from pony.orm import desc
 
 from conduit.auth import User
 from .model import Article, Comment, Tag
@@ -54,8 +54,7 @@ class ArticleFeed(object):
         self.offset = offset
 
     def query(self):
-        result = select(article for article in Article
-                        if self.user in article.author.followers)
+        result = Article.select(lambda a: self.user in a.author.followers)
         result = result.sort_by(desc(Article.created_at))
         if self.limit:
             result = result.limit(self.limit, offset=self.offset)
