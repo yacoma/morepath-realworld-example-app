@@ -1,6 +1,6 @@
 ---
 jwtauth:
-  master_secret: 13ad14ebf16dks743793kdsjfi39fe0dnf0eu5h8
+  master_secret: 13ad14ebfl9eks743793kdsjfi39fe0dnf0eu5h8
 
 database:
   provider: postgres
