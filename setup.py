@@ -46,7 +46,7 @@ setup(
             'pytest-cov',
         ],
         production=[
-            'psycopg2-binary',
+            'psycopg2',
         ]
     ),
     entry_points=dict(
