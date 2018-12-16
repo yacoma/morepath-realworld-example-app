@@ -219,7 +219,7 @@ The following placeholders are used:
 - **[PATH TO GUNICORN LOG]** - absolute path to Gunicorn log without file extension
 - **[PATH TO CERTIFICATE]** - absolute path to SSL certificate file
 - **[PATH TO CERTIFICATE KEY]** - absolute path to SSL certificate key file
-- **[PATH TO CLIENT BUILD]** - absolute path client build you want to serve
+- **[PATH TO CLIENT APP]** - absolute path to client app you want to serve
 
 ## Serve a conduit client together with the backend
 
