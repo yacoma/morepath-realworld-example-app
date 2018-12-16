@@ -36,7 +36,6 @@ setup(
             'pytest >= 2.9.1',
             'pytest-remove-stale-bytecode',
             'pytest-env',
-
             'WebTest >= 2.0.14',
         ],
         pep8=[
