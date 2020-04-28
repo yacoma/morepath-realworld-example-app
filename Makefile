@@ -3,7 +3,7 @@
 install: env/bin/python
 
 env/bin/python:
-	virtualenv -p python3.5 --clear env
+	virtualenv -p python3 --clear env
 
 .PHONY:	deploylive
 deploylive: env/bin/python
