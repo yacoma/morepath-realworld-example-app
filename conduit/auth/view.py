@@ -14,30 +14,30 @@ from .model import Login, User, Profile
 from .validator import EmailValidator
 
 
-with open('conduit/auth/schema.yml') as schema:
+with open("conduit/auth/schema.yml") as schema:
     schema = yaml.safe_load(schema)
 
-login_validator = loader(schema['login'])
-user_validator = loader(schema['user'], EmailValidator)
+login_validator = loader(schema["login"])
+user_validator = loader(schema["user"], EmailValidator)
 
 
 def _dump_user_json(user, token):
     return {
-        'user': {
-            'email': user.email,
-            'username': user.username,
-            'token': token,
-            'bio': user.bio,
-            'image': user.image
+        "user": {
+            "email": user.email,
+            "username": user.username,
+            "token": token,
+            "bio": user.bio,
+            "image": user.image,
         }
     }
 
 
-@App.json(model=Login, request_method='POST', load=login_validator)
+@App.json(model=Login, request_method="POST", load=login_validator)
 def login(self, request, json):
-    u = json['user']
-    email = u['email']
-    password = u['password']
+    u = json["user"]
+    email = u["email"]
+    password = u["password"]
 
     ph = PasswordHasher()
     user = User.get(email=email)
@@ -59,52 +59,42 @@ def login(self, request, json):
             request.app.remember_identity(response, request, identity)
 
             # creating JSON view in @request.after to have access to token
-            atype, token = response.headers['Authorization'].split(' ', 1)
+            atype, token = response.headers["Authorization"].split(" ", 1)
             response.json = _dump_user_json(user, token)
 
     else:
+
         @request.after
         def credentials_not_valid(response):
             response.status_code = 422
 
-        return {
-            'errors': {
-                'email or password': ['is invalid'],
-            }
-        }
+        return {"errors": {"email or password": ["is invalid"]}}
 
 
-@App.json(
-    model=UserCollection, request_method='POST', load=user_validator
-)
+@App.json(model=UserCollection, request_method="POST", load=user_validator)
 def user_add(self, request, json):
-    u = json['user']
-    email = u['email']
-    password = u['password']
-    username = u['username']
+    u = json["user"]
+    email = u["email"]
+    password = u["password"]
+    username = u["username"]
     errors = {}
 
     if User.exists(email=email):
-        errors['email'] = ['has already been taken']
+        errors["email"] = ["has already been taken"]
 
     if User.exists(username=username):
-        errors['username'] = ['has already been taken']
+        errors["username"] = ["has already been taken"]
 
     if errors:
+
         @request.after
         def after(response):
             response.status = 422
 
-        return {
-            'errors': errors
-        }
+        return {"errors": errors}
 
     else:
-        user = self.add(
-            username=username,
-            email=email,
-            password=password
-        )
+        user = self.add(username=username, email=email, password=password)
         user.last_login = datetime.utcnow()
 
         @request.after
@@ -115,59 +105,58 @@ def user_add(self, request, json):
             request.app.remember_identity(response, request, identity)
 
             # creating JSON view in @request.after to have access to token
-            authtype, token = response.headers['Authorization'].split(' ', 1)
+            authtype, token = response.headers["Authorization"].split(" ", 1)
             response.json = _dump_user_json(user, token)
 
 
 @App.json(model=User, permission=ViewPermission)
 def user_default(self, request):
-    authtype, token = request.headers['Authorization'].split(' ', 1)
+    authtype, token = request.headers["Authorization"].split(" ", 1)
 
     return _dump_user_json(self, token)
 
 
 @App.json(
-    model=User,
-    request_method='PUT',
-    load=user_validator,
-    permission=EditPermission
+    model=User, request_method="PUT", load=user_validator, permission=EditPermission
 )
 def user_update(self, request, json):
-    u = json['user']
+    u = json["user"]
     errors = {}
 
-    if 'email' in u and self.email != u['email'] \
-            and User.exists(email=u['email']):
-        errors['email'] = ['has already been taken']
+    if "email" in u and self.email != u["email"] and User.exists(email=u["email"]):
+        errors["email"] = ["has already been taken"]
 
-    if 'username' in u and self.username != u['username'] \
-            and User.exists(username=u['username']):
-        errors['username'] = ['has already been taken']
+    if (
+        "username" in u
+        and self.username != u["username"]
+        and User.exists(username=u["username"])
+    ):
+        errors["username"] = ["has already been taken"]
 
     if errors:
+
         @request.after
         def after(response):
             response.status = 422
 
-        return {
-            'errors': errors
-        }
+        return {"errors": errors}
 
     else:
         self.update(u)
-        authtype, token = request.headers['Authorization'].split(' ', 1)
+        authtype, token = request.headers["Authorization"].split(" ", 1)
 
         return _dump_user_json(self, token)
 
 
 def _dump_profile_json(profile, current_user):
     return {
-        'profile': {
-            'username': profile.profile.username,
-            'bio': profile.profile.bio,
-            'image': profile.profile.image,
-            'following': current_user in profile.profile.followers
-            if current_user else False
+        "profile": {
+            "username": profile.profile.username,
+            "bio": profile.profile.bio,
+            "image": profile.profile.image,
+            "following": current_user in profile.profile.followers
+            if current_user
+            else False,
         }
     }
 
@@ -183,10 +172,7 @@ def profile_default(self, request):
 
 
 @App.json(
-    model=Profile,
-    name='follow',
-    request_method='POST',
-    permission=EditPermission
+    model=Profile, name="follow", request_method="POST", permission=EditPermission
 )
 def profile_follow(self, request):
     current_user = User.get(email=request.identity.userid)
@@ -197,10 +183,7 @@ def profile_follow(self, request):
 
 
 @App.json(
-    model=Profile,
-    name='follow',
-    request_method='DELETE',
-    permission=EditPermission
+    model=Profile, name="follow", request_method="DELETE", permission=EditPermission
 )
 def profile_unfollow(self, request):
     current_user = User.get(email=request.identity.userid)

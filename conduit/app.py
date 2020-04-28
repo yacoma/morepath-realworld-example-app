@@ -12,7 +12,7 @@ class App(PonyApp, AuthApp, BlogApp, CORSApp):
     pass
 
 
-with open('conduit/settings/default.yml') as defaults:
+with open("conduit/settings/default.yml") as defaults:
     defaults_dict = yaml.safe_load(defaults)
 
 App.init_settings(defaults_dict)
@@ -33,7 +33,7 @@ class ProductionApp(App):
     pass
 
 
-with open('conduit/settings/production.yml') as settings:
+with open("conduit/settings/production.yml") as settings:
     settings_dict = yaml.safe_load(settings)
 
 ProductionApp.init_settings(settings_dict)
@@ -43,7 +43,7 @@ class TestApp(App):
     pass
 
 
-with open('conduit/settings/test.yml') as settings:
+with open("conduit/settings/test.yml") as settings:
     settings_dict = yaml.safe_load(settings)
 
 TestApp.init_settings(settings_dict)

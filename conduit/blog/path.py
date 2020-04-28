@@ -3,24 +3,16 @@ from webob.exc import HTTPUnauthorized
 
 from conduit.auth import User
 from .app import App
-from .collection import (
-    ArticleCollection, ArticleFeed, CommentCollection, TagCollection
-)
+from .collection import ArticleCollection, ArticleFeed, CommentCollection, TagCollection
 from .model import Article, Comment
 
 
-@App.path(model=ArticleCollection, path='articles')
-def get_article_collection(
-    tag='',
-    author='',
-    favorited='',
-    limit=10,
-    offset=0
-):
+@App.path(model=ArticleCollection, path="articles")
+def get_article_collection(tag="", author="", favorited="", limit=10, offset=0):
     return ArticleCollection(tag, author, favorited, limit, offset)
 
 
-@App.path(model=ArticleFeed, path='articles/feed')
+@App.path(model=ArticleFeed, path="articles/feed")
 def get_article_feed(request, limit=10, offset=0):
     current_user = request.identity
     if current_user == NO_IDENTITY:
@@ -30,27 +22,27 @@ def get_article_feed(request, limit=10, offset=0):
     return ArticleFeed(user, limit, offset)
 
 
-@App.path(model=Article, path='articles/{slug}')
-def get_article(slug=''):
+@App.path(model=Article, path="articles/{slug}")
+def get_article(slug=""):
     return Article.get(slug=slug)
 
 
-@App.path(model=CommentCollection, path='articles/{slug}/comments')
-def get_comment_collection(slug=''):
+@App.path(model=CommentCollection, path="articles/{slug}/comments")
+def get_comment_collection(slug=""):
     article = Article.get(slug=slug)
     if not article:
         return None
     return CommentCollection(article)
 
 
-@App.path(model=Comment, path='articles/{slug}/comments/{id}')
-def get_comment(slug='', id=0):
+@App.path(model=Comment, path="articles/{slug}/comments/{id}")
+def get_comment(slug="", id=0):
     article = Article.get(slug=slug)
     if not article or not Comment.exists(id=id):
         return None
     return Comment[id]
 
 
-@App.path(model=TagCollection, path='tags')
+@App.path(model=TagCollection, path="tags")
 def get_tag_collection():
     return TagCollection()

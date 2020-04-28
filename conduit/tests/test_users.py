@@ -23,10 +23,18 @@ def setup_function(function):
     ph = PasswordHasher()
 
     with db_session:
-        User(id=1, username='Tester', email='tester@example.com',
-             password=ph.hash('top_secret_1'))
-        User(id=2, username='OtherUser', email='other_user@example.com',
-             password=ph.hash('top_secret_2'))
+        User(
+            id=1,
+            username="Tester",
+            email="tester@example.com",
+            password=ph.hash("top_secret_1"),
+        )
+        User(
+            id=2,
+            username="OtherUser",
+            email="other_user@example.com",
+            password=ph.hash("top_secret_2"),
+        )
 
 
 def test_login():
@@ -34,55 +42,38 @@ def test_login():
     c = Client(app)
 
     response = c.post(
-        '/users/login',
-        json.dumps({
-            "user": {
-                "email": "tester@example.com",
-                "password": "false_password"
-            }
-        }),
-        status=422
+        "/users/login",
+        json.dumps(
+            {"user": {"email": "tester@example.com", "password": "false_password"}}
+        ),
+        status=422,
     )
-    assert response.json == {
-        "errors": {
-            "email or password": ["is invalid"]
-        }
-    }
+    assert response.json == {"errors": {"email or password": ["is invalid"]}}
 
     response = c.post(
-        '/users/login',
-        json.dumps({
-            "user": {
-                "email": "not_exists@example.com",
-                "password": "top_secret_1"
-            }
-        }),
-        status=422
+        "/users/login",
+        json.dumps(
+            {"user": {"email": "not_exists@example.com", "password": "top_secret_1"}}
+        ),
+        status=422,
     )
-    assert response.json == {
-        "errors": {
-            "email or password": ["is invalid"]
-        }
-    }
+    assert response.json == {"errors": {"email or password": ["is invalid"]}}
 
     response = c.post(
-        '/users/login',
-        json.dumps({
-            "user": {
-                "email": "tester@example.com",
-                "password": "top_secret_1"
-            }
-        }),
+        "/users/login",
+        json.dumps(
+            {"user": {"email": "tester@example.com", "password": "top_secret_1"}}
+        ),
     )
 
-    authtype, token = response.headers['Authorization'].split(' ', 1)
+    authtype, token = response.headers["Authorization"].split(" ", 1)
     user = {
         "user": {
             "email": "tester@example.com",
             "username": "Tester",
             "token": token,
             "bio": "",
-            "image": ""
+            "image": "",
         }
     }
 
@@ -92,29 +83,26 @@ def test_login():
 def test_user():
     c = Client(App())
 
-    c.get('/user', status=401)
+    c.get("/user", status=401)
 
     response = c.post(
-        '/users/login',
-        json.dumps({
-            "user": {
-                "email": "tester@example.com",
-                "password": "top_secret_1"
-            }
-        }),
+        "/users/login",
+        json.dumps(
+            {"user": {"email": "tester@example.com", "password": "top_secret_1"}}
+        ),
     )
 
-    headers = {'Authorization': response.headers['Authorization']}
-    authtype, token = response.headers['Authorization'].split(' ', 1)
+    headers = {"Authorization": response.headers["Authorization"]}
+    authtype, token = response.headers["Authorization"].split(" ", 1)
 
-    response = c.get('/user', headers=headers)
+    response = c.get("/user", headers=headers)
     user = {
         "user": {
             "email": "tester@example.com",
             "username": "Tester",
             "token": token,
             "bio": "",
-            "image": ""
+            "image": "",
         }
     }
 
@@ -122,139 +110,124 @@ def test_user():
 
 
 def test_add_user():
-    c = Client(App(), extra_environ=dict(REMOTE_ADDR='127.0.0.1'))
+    c = Client(App(), extra_environ=dict(REMOTE_ADDR="127.0.0.1"))
 
-    new_user_json = json.dumps({
-        "user": {
-            "username": "NewUser",
-            "email": "newuser@example.com",
-            "password": "top_secret_3",
+    new_user_json = json.dumps(
+        {
+            "user": {
+                "username": "NewUser",
+                "email": "newuser@example.com",
+                "password": "top_secret_3",
+            }
         }
-    })
+    )
 
-    response = c.post('/users', new_user_json, status=201)
-    authtype, token = response.headers['Authorization'].split(' ', 1)
+    response = c.post("/users", new_user_json, status=201)
+    authtype, token = response.headers["Authorization"].split(" ", 1)
     user = {
         "user": {
             "email": "newuser@example.com",
             "username": "NewUser",
             "token": token,
             "bio": "",
-            "image": ""
+            "image": "",
         }
     }
 
     assert response.json == user
     with db_session:
-        assert User.exists(username='NewUser')
+        assert User.exists(username="NewUser")
 
-    new_user_json = json.dumps({
-        "user": {
-            "username": "NextUser",
-            "email": "newuser@example.com",
-            "password": "top_secret_3",
+    new_user_json = json.dumps(
+        {
+            "user": {
+                "username": "NextUser",
+                "email": "newuser@example.com",
+                "password": "top_secret_3",
+            }
         }
-    })
+    )
 
-    response = c.post('/users', new_user_json, status=422)
-    assert response.json == {
-        "errors": {
-            "email": ["has already been taken"]
-        }
-    }
+    response = c.post("/users", new_user_json, status=422)
+    assert response.json == {"errors": {"email": ["has already been taken"]}}
 
-    new_user_json = json.dumps({
-        "user": {
-            "username": "NewUser",
-            "email": "nextuser@example.com",
-            "password": "top_secret_3",
+    new_user_json = json.dumps(
+        {
+            "user": {
+                "username": "NewUser",
+                "email": "nextuser@example.com",
+                "password": "top_secret_3",
+            }
         }
-    })
+    )
 
-    response = c.post('/users', new_user_json, status=422)
-    assert response.json == {
-        "errors": {
-            "username": ["has already been taken"]
-        }
-    }
+    response = c.post("/users", new_user_json, status=422)
+    assert response.json == {"errors": {"username": ["has already been taken"]}}
 
-    new_user_json = json.dumps({
-        "user": {
-            "username": "NewUser",
-            "email": "newuser@example",
-            "password": "top_secret_4",
+    new_user_json = json.dumps(
+        {
+            "user": {
+                "username": "NewUser",
+                "email": "newuser@example",
+                "password": "top_secret_4",
+            }
         }
-    })
+    )
 
-    response = c.post('/users', new_user_json, status=422)
-    assert response.json == {
-        "errors": {
-            "email": ["Not valid email"]
-        }
-    }
+    response = c.post("/users", new_user_json, status=422)
+    assert response.json == {"errors": {"email": ["Not valid email"]}}
 
-    new_user_json = json.dumps({
-        "user": {
-            "username": 123,
-            "email": "username_not_string@example.com",
-            "password": "top_secret_5",
+    new_user_json = json.dumps(
+        {
+            "user": {
+                "username": 123,
+                "email": "username_not_string@example.com",
+                "password": "top_secret_5",
+            }
         }
-    })
+    )
 
-    response = c.post('/users', new_user_json, status=422)
-    assert response.json == {
-        "errors": {
-            "username": ["must be of string type"]
-        }
-    }
+    response = c.post("/users", new_user_json, status=422)
+    assert response.json == {"errors": {"username": ["must be of string type"]}}
 
-    new_user_json = json.dumps({
-        "user": {
-            "username": "next_user",
-            "email": "username_not_string@example.com",
-            "password": "short",
+    new_user_json = json.dumps(
+        {
+            "user": {
+                "username": "next_user",
+                "email": "username_not_string@example.com",
+                "password": "short",
+            }
         }
-    })
+    )
 
-    response = c.post('/users', new_user_json, status=422)
-    assert response.json == {
-        "errors": {
-            "password": ["min length is 8"]
-        }
-    }
+    response = c.post("/users", new_user_json, status=422)
+    assert response.json == {"errors": {"password": ["min length is 8"]}}
 
 
 def test_update_user():
     c = Client(App())
 
     response = c.post(
-        '/users/login',
-        json.dumps({
-            "user": {
-                "email": "tester@example.com",
-                "password": "top_secret_1"
-            }
-        }),
+        "/users/login",
+        json.dumps(
+            {"user": {"email": "tester@example.com", "password": "top_secret_1"}}
+        ),
     )
 
-    headers = {'Authorization': response.headers['Authorization']}
-    authtype, token = response.headers['Authorization'].split(' ', 1)
+    headers = {"Authorization": response.headers["Authorization"]}
+    authtype, token = response.headers["Authorization"].split(" ", 1)
 
-    update_user_json = json.dumps({
-        "user": {
-            "username": "Guru",
-            "bio": "My life",
-            "image": "avatar.png",
-        }
-    })
-    response = c.put('/user', update_user_json, headers=headers)
+    update_user_json = json.dumps(
+        {"user": {"username": "Guru", "bio": "My life", "image": "avatar.png"}}
+    )
+    response = c.put("/user", update_user_json, headers=headers)
     user = {
         "user": {
             "email": "tester@example.com",
             "username": "Guru",
             "token": token,
             "bio": "My life",
-            "image": "avatar.png"
+            "image": "avatar.png",
         }
     }
 
@@ -262,65 +235,27 @@ def test_update_user():
     with db_session:
         assert User[1].username == "Guru"
 
-    update_user_json = json.dumps({
-        "user": {
-            "email": "guru@example",
-        }
-    })
-    response = c.put('/user', update_user_json, headers=headers, status=422)
-    assert response.json == {
-        "errors": {
-            "email": [
-                "Not valid email"
-            ]
-        }
-    }
+    update_user_json = json.dumps({"user": {"email": "guru@example"}})
+    response = c.put("/user", update_user_json, headers=headers, status=422)
+    assert response.json == {"errors": {"email": ["Not valid email"]}}
 
-    update_user_json = json.dumps({
-        "user": {
-            "email": "other_user@example.com",
-        }
-    })
-    response = c.put('/user', update_user_json, headers=headers, status=422)
-    assert response.json == {
-        "errors": {
-            "email": [
-                "has already been taken"
-            ]
-        }
-    }
+    update_user_json = json.dumps({"user": {"email": "other_user@example.com"}})
+    response = c.put("/user", update_user_json, headers=headers, status=422)
+    assert response.json == {"errors": {"email": ["has already been taken"]}}
 
-    update_user_json = json.dumps({
-        "user": {
-            "username": "OtherUser",
-        }
-    })
-    response = c.put('/user', update_user_json, headers=headers, status=422)
-    assert response.json == {
-        "errors": {
-            "username": [
-                "has already been taken"
-            ]
-        }
-    }
+    update_user_json = json.dumps({"user": {"username": "OtherUser"}})
+    response = c.put("/user", update_user_json, headers=headers, status=422)
+    assert response.json == {"errors": {"username": ["has already been taken"]}}
 
-    update_user_json = json.dumps({
-        "user": {
-            "password": "top_secret_0",
-        }
-    })
-    c.put('/user', update_user_json, headers=headers)
+    update_user_json = json.dumps({"user": {"password": "top_secret_0"}})
+    c.put("/user", update_user_json, headers=headers)
 
     ph = PasswordHasher()
     with db_session:
-        assert ph.verify(User[1].password, 'top_secret_0')
+        assert ph.verify(User[1].password, "top_secret_0")
 
-    update_user_json = json.dumps({
-        "user": {
-            "email": "guru@example.com",
-        }
-    })
-    c.put('/user', update_user_json, headers=headers)
+    update_user_json = json.dumps({"user": {"email": "guru@example.com"}})
+    c.put("/user", update_user_json, headers=headers)
 
     with db_session:
         assert User[1].email == "guru@example.com"

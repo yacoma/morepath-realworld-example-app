@@ -11,6 +11,4 @@ def validation_error(self, request):
 
     errors = list(self.errors.values())[0][0]
 
-    return {
-        'errors': errors
-    }
+    return {"errors": errors}

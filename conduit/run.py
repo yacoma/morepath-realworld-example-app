@@ -14,13 +14,13 @@ def setup_db(app):
     db.generate_mapping(create_tables=True)
 
 
-def wsgi_factory():   # pragma: no cover
+def wsgi_factory():  # pragma: no cover
     morepath.autoscan()
 
-    if os.getenv('RUN_ENV') == 'production':
+    if os.getenv("RUN_ENV") == "production":
         ProductionApp.commit()
         app = ProductionApp()
-    elif os.getenv('RUN_ENV') == 'test':
+    elif os.getenv("RUN_ENV") == "test":
         TestApp.commit()
         app = TestApp()
     else:
@@ -32,7 +32,7 @@ def wsgi_factory():   # pragma: no cover
     @wsgify
     def run_morepath(request):
         popped = request.path_info_pop()
-        if popped == 'api':
+        if popped == "api":
             return request.get_response(app)
         else:
             raise HTTPNotFound
@@ -40,4 +40,4 @@ def wsgi_factory():   # pragma: no cover
     return run_morepath
 
 
-application = wsgi_factory()   # pragma: no cover
+application = wsgi_factory()  # pragma: no cover

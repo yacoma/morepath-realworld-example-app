@@ -40,7 +40,7 @@ class ArticleCollection:
             description=description,
             body=body,
             author=author,
-            tag_list=tags
+            tag_list=tags,
         )
         article.flush()
 
@@ -67,16 +67,12 @@ class CommentCollection:
         self.article = article
 
     def query(self):
-        return Comment.select(
-            lambda c: c.article == self.article
-        ).sort_by(desc(Comment.created_at))[:]
+        return Comment.select(lambda c: c.article == self.article).sort_by(
+            desc(Comment.created_at)
+        )[:]
 
     def add(self, body, author):
-        comment = Comment(
-            body=body,
-            author=author,
-            article=self.article
-        )
+        comment = Comment(body=body, author=author, article=self.article)
         comment.flush()
 
         return comment

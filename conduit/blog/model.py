@@ -7,7 +7,7 @@ from conduit.database import db
 
 
 class Article(db.Entity):
-    _table_ = 'articles'
+    _table_ = "articles"
 
     slug = Optional(str, 200, unique=True, nullable=True, default=None)
     title = Required(str, 255)
@@ -27,10 +27,10 @@ class Article(db.Entity):
 
     def _slugify_url_unique(self, text):
         slugify_url_unique = UniqueSlugify(
-            unique_check=self._unique_check, uids=['feed']
+            unique_check=self._unique_check, uids=["feed"]
         )
         slugify_url_unique.to_lower = True
-        slugify_url_unique.stop_words = ('a', 'an', 'the')
+        slugify_url_unique.stop_words = ("a", "an", "the")
         slugify_url_unique.max_length = 200
         return slugify_url_unique(text)
 
@@ -44,18 +44,18 @@ class Article(db.Entity):
     def update(self, payload={}):
         update_payload = {}
         for attribute, value in payload.items():
-            if attribute == 'tagList':
+            if attribute == "tagList":
                 tags = []
                 for tagname in value:
                     tag = Tag.get(tagname=tagname)
                     if not tag:
                         tag = Tag(tagname=tagname)
                     tags.append(tag)
-                update_payload['tag_list'] = tags
+                update_payload["tag_list"] = tags
             else:
                 update_payload[attribute] = value
 
-            if attribute == 'title' and value != self.title:
+            if attribute == "title" and value != self.title:
                 self.slug = self._slugify_url_unique(value)
 
         self.set(**update_payload)
@@ -65,7 +65,7 @@ class Article(db.Entity):
 
 
 class Comment(db.Entity):
-    _table_ = 'comments'
+    _table_ = "comments"
 
     id = PrimaryKey(int, auto=True)
     body = Required(LongStr)
@@ -79,7 +79,7 @@ class Comment(db.Entity):
 
 
 class Tag(db.Entity):
-    _table_ = 'tags'
+    _table_ = "tags"
 
     tagname = Required(str, 255)
     articles = Set(Article)

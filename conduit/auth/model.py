@@ -10,7 +10,7 @@ class Login:
 
 
 class User(db.Entity):
-    _table_ = 'users'
+    _table_ = "users"
 
     username = Required(str, 80, unique=True)
     email = Required(str, 100, unique=True)
@@ -28,10 +28,10 @@ class User(db.Entity):
     def update(self, payload={}):
         update_payload = {}
         for attribute, value in payload.items():
-            if attribute == 'password':
+            if attribute == "password":
                 ph = PasswordHasher()
                 password_hash = ph.hash(value)
-                update_payload['password'] = password_hash
+                update_payload["password"] = password_hash
             else:
                 update_payload[attribute] = value
         self.set(**update_payload)

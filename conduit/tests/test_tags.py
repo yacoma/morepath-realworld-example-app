@@ -18,14 +18,14 @@ def setup_function(function):
     db.create_tables()
 
     with db_session:
-        Tag(id=1, tagname='test')
-        Tag(id=2, tagname='text')
+        Tag(id=1, tagname="test")
+        Tag(id=2, tagname="text")
 
 
 def test_list_tags():
     c = Client(App())
 
-    response = c.get('/tags')
-    assert len(response.json['tags']) == 2
-    assert 'test' in response.json['tags']
-    assert 'text' in response.json['tags']
+    response = c.get("/tags")
+    assert len(response.json["tags"]) == 2
+    assert "test" in response.json["tags"]
+    assert "text" in response.json["tags"]
