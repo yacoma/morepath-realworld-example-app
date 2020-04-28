@@ -29,6 +29,8 @@ A demo conduit-morepath backend server is running at https://conduit.yacoma.it/a
 	- [Error Handling](#error-handling)
 	- [Authentication](#authentication)
 - [Testing](#testing)
+	- [Install pre-commit hook for Black integration](#install-pre-commit-hook-for-black-integration)
+	- [Black](#black)
 - [Deployment](#deployment)
 	- [Requirements for the server](#requirements-for-the-server)
 	- [Overview](#overview)
@@ -164,6 +166,28 @@ installed Python 3.5 or/and Python 3.6:
 ```sh
 (env) $ tox
 ```
+
+## Install pre-commit hook for Black integration
+
+We're using [Black](#black) for formatting the code and it's recommended to install the
+[pre-commit hook](https://black.readthedocs.io/en/stable/version_control_integration.html)
+for Black integration before committing:
+
+```sh
+$ pre-commit install
+```
+
+## Black
+
+￼To format the code with the [Black Code Formatter](https://black.readthedocs.io)
+run in the root directory:
+
+```sh
+$ black .
+```
+
+￼Black has also [integration](https://black.readthedocs.io/en/stable/editor_integration.html)
+for the most popular editors.
 
 # Deployment
 

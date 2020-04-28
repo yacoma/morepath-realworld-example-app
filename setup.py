@@ -38,7 +38,7 @@ setup(
         ],
         pep8=[
             'flake8',
-            'pep8-naming',
+            'black',
         ],
         coverage=[
             'pytest-cov',
@@ -57,7 +57,7 @@ setup(
         'Intended Audience :: Developers',
         'Environment :: Web Environment',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ]
 )
