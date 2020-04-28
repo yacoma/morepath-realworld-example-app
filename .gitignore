@@ -21,17 +21,15 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+doc/build/
 
 # Database
 *.db
 
 # IDEs and editors
-/.idea
+.vscode
+.idea
 .project
 .classpath
 *.launch
-.settings/
-
-#System Files
-.DS_Store
-Thumbs.db
+.settings
