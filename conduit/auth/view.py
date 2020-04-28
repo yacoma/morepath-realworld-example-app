@@ -15,7 +15,7 @@ from .validator import EmailValidator
 
 
 with open('conduit/auth/schema.yml') as schema:
-    schema = yaml.load(schema)
+    schema = yaml.safe_load(schema)
 
 login_validator = loader(schema['login'])
 user_validator = loader(schema['user'], EmailValidator)
@@ -69,7 +69,7 @@ def login(self, request, json):
 
         return {
             'errors': {
-              'email or password': ['is invalid'],
+                'email or password': ['is invalid'],
             }
         }
 

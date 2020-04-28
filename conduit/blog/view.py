@@ -13,7 +13,7 @@ from .model import Article, Comment
 
 
 with open('conduit/blog/schema.yml') as schema:
-    schema = yaml.load(schema)
+    schema = yaml.safe_load(schema)
 
 article_validator = loader(schema['article'])
 comment_validator = loader(schema['comment'])
