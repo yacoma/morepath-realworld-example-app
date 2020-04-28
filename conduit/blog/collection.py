@@ -4,7 +4,7 @@ from conduit.auth import User
 from .model import Article, Comment, Tag
 
 
-class ArticleCollection(object):
+class ArticleCollection:
     def __init__(self, tag, author, favorited, limit, offset):
         self.tag = Tag.get(tagname=tag) if tag else None
         self.author = User.get(username=author) if author else None
@@ -47,7 +47,7 @@ class ArticleCollection(object):
         return article
 
 
-class ArticleFeed(object):
+class ArticleFeed:
     def __init__(self, user, limit, offset):
         self.user = user
         self.limit = limit
@@ -62,7 +62,7 @@ class ArticleFeed(object):
         return result[:]
 
 
-class CommentCollection(object):
+class CommentCollection:
     def __init__(self, article):
         self.article = article
 
@@ -82,6 +82,6 @@ class CommentCollection(object):
         return comment
 
 
-class TagCollection(object):
+class TagCollection:
     def query(self):
         return Tag.select().sort_by(Tag.tagname)[:]

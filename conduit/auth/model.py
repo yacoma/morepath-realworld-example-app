@@ -5,7 +5,7 @@ from pony.orm import Required, Optional, Set
 from conduit.database import db
 
 
-class Login(object):
+class Login:
     pass
 
 
@@ -37,6 +37,6 @@ class User(db.Entity):
         self.set(**update_payload)
 
 
-class Profile(object):
+class Profile:
     def __init__(self, user):
         self.profile = user

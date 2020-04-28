@@ -4,11 +4,11 @@ from conduit.auth.model import User
 from .app import App
 
 
-class ViewPermission(object):
+class ViewPermission:
     pass
 
 
-class EditPermission(object):
+class EditPermission:
     pass
 
 
