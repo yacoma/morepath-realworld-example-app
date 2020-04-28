@@ -181,7 +181,7 @@ $ apt-get install nginx supervisor make
 
 ## Overview
 
-We use a `post-receive` git hook to puplish the repository on the production
+We use a `post-receive` git hook to publish the repository on the production
 server. He triggers on every push to the git repo on the server.
 
 The `post-receive` hook uses the path defined in the `prod_path`
